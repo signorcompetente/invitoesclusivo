@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Twin Peaks — Festa di Inaugurazione</title>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Special Elite', serif; background: #0a0a0a; }
+
+    /* ===== INVITO ===== */
+    .page-invite { display: flex; flex-direction: column; min-height: 100vh; }
+    .red-room { background: #8b0000; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2.5rem 1.5rem 2rem; position: relative; overflow: hidden; }
+    .curtain-left { position: absolute; top: 0; bottom: 0; left: 0; width: 60px; background: linear-gradient(to right, #3a0000, #8b0000 80%); opacity: 0.6; }
+    .curtain-right { position: absolute; top: 0; bottom: 0; right: 0; width: 60px; background: linear-gradient(to left, #3a0000, #8b0000 80%); opacity: 0.6; }
+    .curtain-fold { position: absolute; top: 0; bottom: 0; width: 18px; opacity: 0.25; background: repeating-linear-gradient(to right, transparent, transparent 6px, #000 6px, #000 7px); }
+    .curtain-fold.l1 { left: 15px; } .curtain-fold.l2 { left: 30px; } .curtain-fold.r1 { right: 15px; } .curtain-fold.r2 { right: 30px; }
+    .invite-content { position: relative; z-index: 2; text-align: center; color: #f0e6d3; }
+    .invite-owl { font-size: 36px; margin-bottom: 0.5rem; display: block; }
+    .invite-title { font-size: 32px; letter-spacing: 6px; text-transform: uppercase; color: #f0e6d3; text-shadow: 0 2px 12px rgba(0,0,0,0.5); margin-bottom: 4px; }
+    .invite-sub { font-size: 13px; letter-spacing: 3px; color: #c9a88a; margin-bottom: 2rem; }
+    .invite-divider { width: 80px; height: 1px; background: #c9a88a; margin: 0 auto 2rem; opacity: 0.5; }
+    .invite-info { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 2rem; }
+    .invite-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .invite-label { font-size: 10px; letter-spacing: 3px; color: #c9a88a; text-transform: uppercase; min-width: 60px; text-align: right; }
+    .invite-value { font-size: 16px; color: #f0e6d3; }
+    .invite-note { font-size: 11px; color: #c9a88a; font-style: italic; letter-spacing: 1px; margin-bottom: 2rem; opacity: 0.8; }
+    .btn-characters { background: #f0e6d3; color: #3a0000; border: none; font-family: 'Special Elite', serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; padding: 12px 32px; border-radius: 2px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+    .btn-characters:hover { background: #fff; color: #5a0000; }
+    .zigzag-floor { height: 140px; position: relative; overflow: hidden; flex-shrink: 0; }
+    .zigzag-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+    /* ===== PERSONAGGI ===== */
+    .page-chars { display: none; background: #0a0a0a; min-height: 100vh; color: #f0e6d3; }
+    .page-chars.active { display: block; }
+    .page-invite.hidden { display: none; }
+    .tp-header { background: #0a0a0a; border-bottom: 2px solid #8b0000; padding: 1.5rem 1.5rem 1.2rem; text-align: center; position: relative; }
+    .tp-htitle { font-size: 22px; color: #c41e1e; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 2px; }
+    .tp-hsub { font-size: 11px; color: #a09080; letter-spacing: 2px; }
+    .back-btn { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); background: transparent; border: 1px solid #3a2a1a; color: #7a6a5a; font-family: 'Special Elite', serif; font-size: 11px; padding: 4px 10px; border-radius: 2px; cursor: pointer; letter-spacing: 1px; }
+    .back-btn:hover { color: #c41e1e; border-color: #8b0000; }
+    .tp-section-title { text-align: center; font-family: 'Special Elite', serif; font-size: 14px; letter-spacing: 3px; color: #c41e1e; text-transform: uppercase; padding: 1.2rem 1rem 0.4rem; }
+    .tp-hint { text-align: center; font-size: 12px; color: #7a6a5a; padding: 0 1rem 1rem; font-family: sans-serif; font-style: italic; }
+    .tp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 10px; padding: 0.5rem 1rem 1.5rem; }
+    .char-card { background: #111; border: 1px solid #2a2010; border-radius: 4px; padding: 10px; cursor: pointer; transition: border-color 0.2s, background 0.2s; text-align: center; }
+    .char-card:hover:not(.taken) { border-color: #8b0000; background: #1a1008; }
+    .char-card.taken { opacity: 0.65; cursor: default; border-color: #1a1a1a; }
+    .char-card.mine { border-color: #8b0000; background: #1a0808; opacity: 1; cursor: pointer; }
+    .char-emoji { font-size: 36px; display: block; margin: 0 auto 6px; line-height: 1; }
+    .char-name { font-family: 'Special Elite', serif; font-size: 13px; color: #f0e6d3; margin: 0 0 2px; line-height: 1.2; }
+    .char-role { font-size: 10px; color: #7a6a5a; font-family: sans-serif; margin: 0 0 6px; font-style: italic; }
+    .char-role-empty { margin: 0 0 6px; min-height: 14px; }
+    .char-status { font-size: 10px; font-family: sans-serif; padding: 2px 8px; border-radius: 2px; display: inline-block; letter-spacing: 1px; text-transform: uppercase; }
+    .status-free { background: rgba(0,100,0,0.2); color: #5a9a5a; border: 1px solid #2a5a2a; }
+    .status-taken { background: rgba(100,0,0,0.2); color: #c06060; border: 1px solid #5a1a1a; }
+    .status-mine { background: rgba(139,0,0,0.3); color: #ff6060; border: 1px solid #8b0000; }
+    .taken-by { font-size: 9px; color: #6a5a5a; font-family: sans-serif; margin-top: 2px; display: block; }
+    .tp-myname { text-align: center; padding: 0 1rem 0.5rem; }
+    .tp-myname input { background: #0a0a0a; border: 1px solid #3a2a1a; color: #f0e6d3; font-family: 'Special Elite', serif; font-size: 13px; padding: 6px 12px; border-radius: 3px; text-align: center; outline: none; width: 200px; }
+    .tp-myname label { display: block; font-size: 10px; color: #7a6a5a; font-family: sans-serif; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+    .tp-footer { text-align: center; padding: 1rem; border-top: 1px solid #1a1008; font-size: 11px; color: #4a3a2a; font-family: sans-serif; letter-spacing: 1px; }
+
+    /* ===== MODAL ===== */
+    .tp-modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
+    .tp-modal-backdrop.open { display: flex; }
+    .tp-modal { background: #111; border: 2px solid #8b0000; border-radius: 6px; padding: 1.5rem; max-width: 300px; width: 90%; text-align: center; font-family: 'Special Elite', serif; }
+    .tp-modal h3 { font-size: 18px; color: #c41e1e; margin: 0 0 4px; letter-spacing: 2px; }
+    .tp-modal p { font-size: 12px; color: #a09080; margin: 0 0 1rem; font-family: sans-serif; }
+    .tp-modal input { width: 100%; background: #0a0a0a; border: 1px solid #8b0000; color: #f0e6d3; font-family: 'Special Elite', serif; font-size: 15px; padding: 8px 12px; border-radius: 3px; text-align: center; box-sizing: border-box; margin-bottom: 12px; outline: none; }
+    .tp-modal input:focus { border-color: #c41e1e; box-shadow: 0 0 0 2px rgba(196,30,30,0.2); }
+    .tp-modal-btns { display: flex; gap: 8px; }
+    .btn-confirm { flex: 1; background: #8b0000; color: #f0e6d3; border: none; font-family: 'Special Elite', serif; font-size: 13px; padding: 8px; border-radius: 3px; cursor: pointer; letter-spacing: 1px; }
+    .btn-confirm:hover { background: #c41e1e; }
+    .btn-cancel { flex: 1; background: transparent; color: #7a6a5a; border: 1px solid #3a3028; font-family: 'Special Elite', serif; font-size: 13px; padding: 8px; border-radius: 3px; cursor: pointer; letter-spacing: 1px; }
+    .btn-cancel:hover { border-color: #6a5a4a; color: #a09080; }
+    .btn-release { background: transparent; color: #8b0000; border: 1px solid #8b0000; font-family: 'Special Elite', serif; font-size: 11px; padding: 4px 10px; border-radius: 3px; cursor: pointer; margin-top: 6px; letter-spacing: 1px; }
+    .btn-release:hover { background: rgba(139,0,0,0.15); }
+  </style>
+</head>
+<body>
+
+  <!-- PAGINA INVITO -->
+  <div class="page-invite" id="page-invite">
+    <div class="red-room">
+      <div class="curtain-left"></div><div class="curtain-right"></div>
+      <div class="curtain-fold l1"></div><div class="curtain-fold l2"></div>
+      <div class="curtain-fold r1"></div><div class="curtain-fold r2"></div>
+      <div class="invite-content">
+        <span class="invite-owl">🦉</span>
+        <div class="invite-title">Twin Peaks</div>
+        <div class="invite-sub">— festa di inaugurazione —</div>
+        <div class="invite-divider"></div>
+        <div class="invite-info">
+          <div class="invite-row"><span class="invite-label">quando</span><span class="invite-value">Sabato 12 Settembre 2026</span></div>
+          <div class="invite-row"><span class="invite-label">ora</span><span class="invite-value">dalle 19:00</span></div>
+          <div class="invite-row"><span class="invite-label">dove</span><span class="invite-value">Via Pagno 9</span></div>
+        </div>
+        <div class="invite-note">Vieni in costume nei panni di un personaggio della serie</div>
+        <button class="btn-characters" id="btn-go-chars">Scegli il tuo personaggio</button>
+      </div>
+    </div>
+    <div class="zigzag-floor"><canvas class="zigzag-canvas" id="zigzag"></canvas></div>
+  </div>
+
+  <!-- PAGINA PERSONAGGI -->
+  <div class="page-chars" id="page-chars">
+    <div class="tp-header">
+      <button class="back-btn" id="back-btn">← Invito</button>
+      <div class="tp-htitle">Twin Peaks</div>
+      <div class="tp-hsub">— scegli il tuo personaggio —</div>
+    </div>
+    <p class="tp-section-title">Chi sei tu?</p>
+    <div class="tp-myname">
+      <label>Il tuo nome</label>
+      <input type="text" id="myname" placeholder="Inserisci il tuo nome..." maxlength="30" />
+    </div>
+    <p class="tp-section-title">I personaggi</p>
+    <p class="tp-hint">Clicca per prenotare. Ognuno può prenderne solo uno.</p>
+    <div class="tp-grid" id="char-grid"></div>
+    <div class="tp-footer">The owls are not what they seem.</div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="tp-modal-backdrop" id="modal-backdrop">
+    <div class="tp-modal">
+      <div id="modal-emoji" style="font-size:48px; margin-bottom:8px;"></div>
+      <h3 id="modal-charname"></h3>
+      <p id="modal-desc"></p>
+      <input type="text" id="modal-input" placeholder="Il tuo nome..." maxlength="30" />
+      <div class="tp-modal-btns">
+        <button class="btn-cancel" id="modal-cancel">Annulla</button>
+        <button class="btn-confirm" id="modal-confirm">Prenota</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://uvkpwxjokgszhrpgbewn.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_jxmLa0R1x9mjnmBZQ0hDRw_xOuRm5SJ';
+
+    const CHARACTERS = [
+      { id: 'cooper',  name: 'Dale Cooper',    role: 'Agente FBI',           emoji: '☕', desc: 'Una tazzina di caffè, nero come la notte.' },
+      { id: 'lp',      name: 'Laura Palmer',   role: '',                     emoji: '🌹', desc: 'Avvolta nella plastica.' },
+      { id: 'bob',     name: 'BOB',            role: "L'entità oscura",      emoji: '😈', desc: 'La rivelazione finale.' },
+      { id: 'nano',    name: 'Il Nano',        role: 'Uomo del sogno',       emoji: '🕯️', desc: 'Capisce il vostro codice.' },
+      { id: 'gigante', name: 'Il Gigante',     role: 'Essere visionario',    emoji: '✨', desc: 'Presta attenzione alle rocce.' },
+      { id: 'gufo',    name: 'Il Gufo',        role: 'Simbolo della Loggia', emoji: '🦉', desc: 'I gufi non sono ciò che sembrano.' },
+      { id: 'truman',  name: 'Harry Truman',   role: 'Sceriffo',             emoji: '⭐', desc: "Custode dell'ordine a Twin Peaks." },
+      { id: 'hawk',    name: 'Hawk',           role: 'Vice sceriffo',        emoji: '🦅', desc: 'Segue la sua natura.' },
+      { id: 'gordon',  name: 'Gordon Cole',    role: 'Direttore FBI',        emoji: '📢', desc: 'COSA HAI DETTO?! Parla più forte!' },
+      { id: 'andy',    name: 'Andy Brennan',   role: 'Agente di polizia',    emoji: '😢', desc: 'Piange facilmente, ma il cuore è grande.' },
+      { id: 'lucy',    name: 'Lucy Moran',     role: 'La centralinista',     emoji: '📞', desc: 'Risponde al telefono con precisione assoluta.' },
+      { id: 'leland',  name: 'Leland Palmer',  role: 'Il padre',             emoji: '🎵', desc: 'Piange mentre canta.' },
+      { id: 'ben',     name: 'Ben Horne',      role: "L'imprenditore",       emoji: '💰', desc: 'Signore del Great Northern Hotel.' },
+      { id: 'audrey',  name: 'Audrey Horne',   role: 'La figlia ribelle',    emoji: '💃', desc: 'Balla da sola al Double R.' },
+      { id: 'donna',   name: 'Donna Hayward',  role: 'La migliore amica',    emoji: '📷', desc: 'In cerca della verità.' },
+      { id: 'james',   name: 'James Hurley',   role: 'Il ribelle',           emoji: '🏍️', desc: 'Cuore spezzato su due ruote.' },
+      { id: 'shelly',  name: 'Shelly Johnson', role: 'La cameriera',         emoji: '🍒', desc: 'Serve torta al Double R.' },
+      { id: 'log',     name: 'Log Lady',       role: 'La guardiana',         emoji: '🪵', desc: 'Il mio tronco ha qualcosa da dire.' },
+      { id: 'josie',   name: 'Josie Packard',  role: 'La misteriosa',        emoji: '🎭', desc: 'I segreti non hanno fine.' },
+    ];
+
+    let bookings = {};
+    let selectedChar = null;
+
+    // ===== SUPABASE API =====
+    async function sbFetch(path, options = {}) {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+        ...options,
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+          ...(options.headers || {})
+        }
+      });
+      return res;
+    }
+
+    async function loadBookings() {
+      try {
+        const res = await sbFetch('bookings?select=character_id,booked_by');
+        const data = await res.json();
+        bookings = {};
+        if (Array.isArray(data)) {
+          data.forEach(row => { bookings[row.character_id] = row.booked_by; });
+        }
+      } catch(e) { bookings = {}; }
+      render();
+    }
+
+    async function addBooking(charId, name) {
+      await sbFetch('bookings', {
+        method: 'POST',
+        body: JSON.stringify({ character_id: charId, booked_by: name })
+      });
+    }
+
+    async function deleteBooking(charId) {
+      await sbFetch('bookings?character_id=eq.' + encodeURIComponent(charId), {
+        method: 'DELETE'
+      });
+    }
+
+    // ===== ZIGZAG =====
+    function drawZigzag() {
+      const canvas = document.getElementById('zigzag');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      const w = canvas.width, h = canvas.height, size = 28;
+      const cols = Math.ceil(w / size) + 2, rows = Math.ceil(h / size) + 2;
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const x = col * size, y = row * size;
+          ctx.fillStyle = (row + col) % 2 === 0 ? '#1a1a1a' : '#f0f0f0';
+          ctx.beginPath();
+          if (row % 2 === 0) { ctx.moveTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size/2, y+size); }
+          else { ctx.moveTo(x+size/2, y); ctx.lineTo(x+size, y+size); ctx.lineTo(x, y+size); }
+          ctx.closePath(); ctx.fill();
+        }
+      }
+    }
+
+    // ===== UI =====
+    function getMyName() { return (document.getElementById('myname').value || '').trim(); }
+
+    function getMyChar() {
+      const name = getMyName().toLowerCase();
+      if (!name) return null;
+      for (const [id, who] of Object.entries(bookings)) { if (who.toLowerCase() === name) return id; }
+      return null;
+    }
+
+    function render() {
+      const grid = document.getElementById('char-grid');
+      const myName = getMyName().toLowerCase();
+      grid.innerHTML = CHARACTERS.map(c => {
+        const takenBy = bookings[c.id];
+        const isMine = takenBy && takenBy.toLowerCase() === myName && myName;
+        const isTaken = !!takenBy && !isMine;
+        const statusHtml = isMine
+          ? `<span class="char-status status-mine">Tuo</span><br><button class="btn-release" onclick="release('${c.id}')">Libera</button>`
+          : isTaken ? `<span class="char-status status-taken">Prenotato</span><span class="taken-by">da ${takenBy}</span>`
+          : `<span class="char-status status-free">Disponibile</span>`;
+        const roleHtml = c.role ? `<div class="char-role">${c.role}</div>` : `<div class="char-role-empty"></div>`;
+        return `<div class="char-card ${isTaken?'taken':''} ${isMine?'mine':''}" ${!isTaken?`onclick="openModal('${c.id}')"`:''}><span class="char-emoji">${c.emoji}</span><div class="char-name">${c.name}</div>${roleHtml}${statusHtml}</div>`;
+      }).join('');
+    }
+
+    function openModal(charId) {
+      const myName = getMyName();
+      if (!myName) {
+        const inp = document.getElementById('myname');
+        inp.focus(); inp.style.borderColor = '#c41e1e';
+        setTimeout(() => { inp.style.borderColor = ''; }, 1500);
+        return;
+      }
+      const myChar = getMyChar();
+      if (myChar && myChar !== charId) { alert('Hai già prenotato un personaggio! Liberalo prima.'); return; }
+      const c = CHARACTERS.find(x => x.id === charId);
+      if (!c) return;
+      selectedChar = charId;
+      document.getElementById('modal-emoji').textContent = c.emoji;
+      document.getElementById('modal-charname').textContent = c.name;
+      document.getElementById('modal-desc').textContent = c.desc;
+      document.getElementById('modal-input').value = myName;
+      document.getElementById('modal-backdrop').classList.add('open');
+      document.getElementById('modal-input').focus();
+    }
+
+    async function confirmBooking() {
+      const name = document.getElementById('modal-input').value.trim();
+      if (!name || !selectedChar) return;
+      document.getElementById('myname').value = name;
+      bookings[selectedChar] = name;
+      render();
+      closeModal();
+      await addBooking(selectedChar, name);
+    }
+
+    async function release(charId) {
+      delete bookings[charId];
+      render();
+      await deleteBooking(charId);
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.remove('open');
+      selectedChar = null;
+    }
+
+    // ===== NAVIGAZIONE =====
+    document.getElementById('btn-go-chars').onclick = () => {
+      document.getElementById('page-invite').classList.add('hidden');
+      document.getElementById('page-chars').classList.add('active');
+      loadBookings();
+    };
+    document.getElementById('back-btn').onclick = () => {
+      document.getElementById('page-invite').classList.remove('hidden');
+      document.getElementById('page-chars').classList.remove('active');
+    };
+    document.getElementById('modal-confirm').onclick = confirmBooking;
+    document.getElementById('modal-cancel').onclick = closeModal;
+    document.getElementById('modal-backdrop').onclick = (e) => { if (e.target === e.currentTarget) closeModal(); };
+    document.getElementById('modal-input').onkeydown = (e) => { if (e.key === 'Enter') confirmBooking(); };
+    document.getElementById('myname').oninput = render;
+
+    drawZigzag();
+    window.addEventListener('resize', drawZigzag);
+  </script>
+</body>
+</html>
