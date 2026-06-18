@@ -19,14 +19,14 @@
       position: relative; overflow: hidden;
     }
     .curtain-left, .curtain-right {
-      position: absolute; top: 0; bottom: 0; width: 60px; opacity: 0.6;
-      animation: sway 7s ease-in-out infinite;
+      position: absolute; top: 0; bottom: 0; width: 70px; opacity: 0.6;
+      animation: sway 4s ease-in-out infinite;
     }
-    .curtain-left { left: 0; background: linear-gradient(to right, #3a0000, #8b0000 80%); transform-origin: top left; }
-    .curtain-right { right: 0; background: linear-gradient(to left, #3a0000, #8b0000 80%); transform-origin: top right; animation-delay: -3.5s; }
-     @keyframes sway {
-      0%, 100% { transform: skewY(0deg); }
-      50% { transform: skewY(2.5deg); }
+    .curtain-left { left: 0; background: linear-gradient(to right, #3a0000, #8b0000 80%); transform-origin: center top; }
+    .curtain-right { right: 0; background: linear-gradient(to left, #3a0000, #8b0000 80%); transform-origin: center top; animation-delay: -2s; }
+    @keyframes sway {
+      0%, 100% { transform: scaleX(1) translateX(0); }
+      50% { transform: scaleX(1.15) translateX(4px); }
     }
     .curtain-fold { position: absolute; top: 0; bottom: 0; width: 18px; opacity: 0.25; background: repeating-linear-gradient(to right, transparent, transparent 6px, #000 6px, #000 7px); }
     .curtain-fold.l1 { left: 15px; } .curtain-fold.l2 { left: 30px; } .curtain-fold.r1 { right: 15px; } .curtain-fold.r2 { right: 30px; }
@@ -62,7 +62,7 @@
     .zigzag-light {
       position: absolute; top: 0; bottom: 0; width: 35%;
       background: linear-gradient(to right, transparent, rgba(255,255,255,0.55), transparent);
-      animation: sweep 6s linear infinite;
+      animation: sweep 12s linear infinite;
       pointer-events: none;
     }
     @keyframes sweep {
