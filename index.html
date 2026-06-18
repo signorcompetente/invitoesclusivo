@@ -8,7 +8,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Special Elite', serif; background: #1a1208; }
+    body { font-family: 'Special Elite', serif; background: #1a1208; position: relative; }
+
+    .vhs-overlay {
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.06) 0px,
+          rgba(0,0,0,0.06) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      mix-blend-mode: overlay;
+      opacity: 0.5;
+    }
+    .vhs-noise {
+      position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: noiseShift 0.4s steps(2) infinite;
+    }
+    @keyframes noiseShift {
+      0% { transform: translate(0,0); }
+      50% { transform: translate(-1%,1%); }
+      100% { transform: translate(1%,-1%); }
+    }
 
     /* ===== INVITO ===== */
     .page-invite { display: flex; flex-direction: column; min-height: 100vh; }
@@ -163,6 +188,8 @@
   </style>
 </head>
 <body>
+  <div class="vhs-overlay"></div>
+  <div class="vhs-noise"></div>
 
   <!-- PAGINA INVITO -->
   <div class="page-invite" id="page-invite">
@@ -173,7 +200,7 @@
       <div class="invite-content">
         <span class="invite-owl">🦉</span>
         <div class="invite-title">Twin Peaks</div>
-        <div class="invite-sub">— festa inaugurazione della casa dell'amore —</div>
+        <div class="invite-sub">— Festa Inaugurale della casa dell'AMORE —</div>
         <div class="invite-divider"></div>
         <div class="invite-info">
           <div class="invite-row"><span class="invite-label">quando</span><span class="invite-value">Sabato 12 Settembre 2026</span></div>
