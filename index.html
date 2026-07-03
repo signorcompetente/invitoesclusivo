@@ -256,9 +256,8 @@
   </div>
 
   <script>
-   const BIN_ID = '6a480558da38895dfe2a3108';
-    const BIN_KEY = '$2a$10$46ZpfFrsCT.61VK5Lo36H.yZpXEl.Ue16GQx762uRNKYlvf8WQ9uG';
-    const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const SUPABASE_URL = 'https://uvkpwxjokgszhrpgbewn.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_jxmLa0R1x9mjnmBZQ0hDRw_xOuRm5SJ';
 
     // Descrizioni rivedute per minimizzare spoiler. Nessuna etichetta "buono/cattivo".
     const CHARACTERS = [
@@ -297,48 +296,43 @@
     let lastBookedId = null;
 
     // ===== SUPABASE API =====
+    async function sbFetch(path, options = {}) {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+        ...options,
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+          ...(options.headers || {})
+        }
+      });
+      return res;
+    }
+
     async function loadBookings() {
       try {
-        const res = await fetch(BIN_URL + '/latest', {
-          headers: { 'X-Master-Key': BIN_KEY }
-        });
+        const res = await sbFetch('bookings?select=character_id,booked_by');
         const data = await res.json();
         bookings = {};
-        const list = data.record?.bookings || [];
-        list.forEach(row => { bookings[row.character_id] = row.booked_by; });
+        if (Array.isArray(data)) {
+          data.forEach(row => { bookings[row.character_id] = row.booked_by; });
+        }
       } catch(e) { bookings = {}; }
       render();
     }
 
     async function addBooking(charId, name) {
-      try {
-        const res = await fetch(BIN_URL + '/latest', {
-          headers: { 'X-Master-Key': BIN_KEY }
-        });
-        const data = await res.json();
-        const list = data.record?.bookings || [];
-        list.push({ character_id: charId, booked_by: name });
-        await fetch(BIN_URL, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'X-Master-Key': BIN_KEY },
-          body: JSON.stringify({ bookings: list })
-        });
-      } catch(e) {}
+      await sbFetch('bookings', {
+        method: 'POST',
+        body: JSON.stringify({ character_id: charId, booked_by: name })
+      });
     }
 
     async function deleteBooking(charId) {
-      try {
-        const res = await fetch(BIN_URL + '/latest', {
-          headers: { 'X-Master-Key': BIN_KEY }
-        });
-        const data = await res.json();
-        const list = (data.record?.bookings || []).filter(r => r.character_id !== charId);
-        await fetch(BIN_URL, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'X-Master-Key': BIN_KEY },
-          body: JSON.stringify({ bookings: list })
-        });
-      } catch(e) {}
+      await sbFetch('bookings?character_id=eq.' + encodeURIComponent(charId), {
+        method: 'DELETE'
+      });
     }
 
     // ===== ZIGZAG =====
