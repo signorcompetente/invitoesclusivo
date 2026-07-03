@@ -256,83 +256,52 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://uvkpwxjokgszhrpgbewn.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_jxmLa0R1x9mjnmBZQ0hDRw_xOuRm5SJ';
-
-    // Descrizioni rivedute per minimizzare spoiler. Nessuna etichetta "buono/cattivo".
-    const CHARACTERS = [
-      { id: 'cooper',  name: 'Dale Cooper',    role: 'Agente FBI',           emoji: '☕', desc: 'Una tazzina di caffè, nero come la notte.', loggia: false },
-      { id: 'lp',      name: 'Laura Palmer',   role: '',                     emoji: '🌹', desc: 'Il mistero che dà inizio a tutto.', loggia: false },
-      { id: 'gordon',  name: 'Gordon Cole',    role: 'Direttore FBI',        emoji: '📢', desc: 'COSA HAI DETTO?! Parla più forte!', loggia: false },
-      { id: 'truman',  name: 'Harry Truman',   role: 'Sceriffo',             emoji: '⭐', desc: "Custode dell'ordine a Twin Peaks.", loggia: false },
-      { id: 'bob',     name: 'BOB',            role: 'Presenza della Loggia', emoji: '😈', desc: 'Qualcosa che si muove tra i boschi.', loggia: true },
-      { id: 'mike',    name: 'MIKE',           role: 'Presenza della Loggia', emoji: '👁️', desc: 'Un monito da un altro luogo.', loggia: true },
-      { id: 'nano',    name: 'Il Nano',        role: 'Uomo della Loggia',    emoji: '🕯️', desc: 'Parla per indovinelli, in un luogo fuori dal tempo.', loggia: true },
-      { id: 'gigante', name: 'Il Gigante',     role: 'Essere della Loggia',  emoji: '✨', desc: 'Custode di visioni e avvertimenti.', loggia: true },
-      { id: 'gufo',    name: 'Il Gufo',        role: 'Simbolo della Loggia', emoji: '🦉', desc: 'I gufi non sono ciò che sembrano.', loggia: true },
-      { id: 'cavallo',  name: 'Il Cavallo Bianco', role: 'Visione',           emoji: '🐎', desc: 'Appare quando meno te lo aspetti.', loggia: true },
-      { id: 'leland',  name: 'Leland Palmer',  role: 'Il padre',             emoji: '🎵', desc: 'Un uomo segnato da un dolore profondo.', loggia: false },
-      { id: 'maddy',   name: 'Maddy Ferguson', role: 'La cugina',            emoji: '👓', desc: 'Arriva in città e tutto cambia.', loggia: false },
-      { id: 'hawk',    name: 'Hawk',           role: 'Vice sceriffo',        emoji: '🦅', desc: 'Segue la sua natura.', loggia: false },
-      { id: 'andy',    name: 'Andy Brennan',   role: 'Agente di polizia',    emoji: '😢', desc: 'Piange facilmente, ma il cuore è grande.', loggia: false },
-      { id: 'lucy',    name: 'Lucy Moran',     role: 'La centralinista',     emoji: '📞', desc: 'Risponde al telefono con precisione assoluta.', loggia: false },
-      { id: 'ben',     name: 'Ben Horne',      role: "L'imprenditore",       emoji: '💰', desc: 'Signore del Great Northern Hotel.', loggia: false },
-      { id: 'audrey',  name: 'Audrey Horne',   role: 'La figlia ribelle',    emoji: '💃', desc: 'Balla da sola al Double R.', loggia: false },
-      { id: 'donna',   name: 'Donna Hayward',  role: 'La migliore amica',    emoji: '📷', desc: 'In cerca della verità.', loggia: false },
-      { id: 'james',   name: 'James Hurley',   role: 'Il ribelle',           emoji: '🏍️', desc: 'Cuore spezzato su due ruote.', loggia: false },
-      { id: 'shelly',  name: 'Shelly Johnson', role: 'La cameriera',         emoji: '🍒', desc: 'Serve torta al Double R.', loggia: false },
-      { id: 'log',     name: 'Log Lady',       role: 'La guardiana',         emoji: '🪵', desc: 'Il mio tronco ha qualcosa da dire.', loggia: false },
-      { id: 'josie',   name: 'Josie Packard',  role: 'La misteriosa',        emoji: '🎭', desc: 'I segreti non hanno fine.', loggia: false },
-      { id: 'woodman', name: 'The Woodman',    role: 'Figura della Loggia',  emoji: '🪓', desc: "Hai una sigaretta? Hai del fuoco?", loggia: true },
-      { id: 'leo',     name: 'Leo Johnson',    role: 'Camionista',           emoji: '🚛', desc: 'Non è mai stato un tipo raccomandabile.', loggia: false },
-      { id: 'bobby',   name: 'Bobby Briggs',   role: 'Il ragazzo di Laura',  emoji: '🏈', desc: 'Cresce più di quanto sembri all\'inizio.', loggia: false },
-      { id: 'norma',   name: 'Norma Jennings', role: 'Proprietaria del Double R', emoji: '🥧', desc: 'La sua torta alla ciliegia è leggendaria.', loggia: false },
-      { id: 'bigEd',   name: 'Big Ed Hurley',  role: 'Benzinaio',            emoji: '⛽', desc: 'Un cuore gentile, una vita complicata.', loggia: false },
-      { id: 'nadine',  name: 'Nadine Hurley',  role: 'Inventrice di tende silenziose', emoji: '🧵', desc: 'Energica, imprevedibile, indimenticabile.', loggia: false },
-    ];
-
-    let bookings = {};
-    let selectedChar = null;
-    let lastBookedId = null;
-
-    // ===== SUPABASE API =====
-    async function sbFetch(path, options = {}) {
-      const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
-        ...options,
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal',
-          ...(options.headers || {})
-        }
-      });
-      return res;
-    }
+    const BIN_ID = '6a480558da38895dfe2a3108';
+    const BIN_KEY = '$2a$10$46ZpfFrsCT.61VK5Lo36H.yZpXEl.Ue16GQx762uRNKYlvf8WQ9uG';
+    const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
     async function loadBookings() {
       try {
-        const res = await sbFetch('bookings?select=character_id,booked_by');
+        const res = await fetch(BIN_URL + '/latest', {
+          headers: { 'X-Master-Key': BIN_KEY }
+        });
         const data = await res.json();
         bookings = {};
-        if (Array.isArray(data)) {
-          data.forEach(row => { bookings[row.character_id] = row.booked_by; });
-        }
+        const list = data.record?.bookings || [];
+        list.forEach(row => { bookings[row.character_id] = row.booked_by; });
       } catch(e) { bookings = {}; }
       render();
     }
 
     async function addBooking(charId, name) {
-      await sbFetch('bookings', {
-        method: 'POST',
-        body: JSON.stringify({ character_id: charId, booked_by: name })
-      });
+      try {
+        const res = await fetch(BIN_URL + '/latest', {
+          headers: { 'X-Master-Key': BIN_KEY }
+        });
+        const data = await res.json();
+        const list = data.record?.bookings || [];
+        list.push({ character_id: charId, booked_by: name });
+        await fetch(BIN_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': BIN_KEY },
+          body: JSON.stringify({ bookings: list })
+        });
+      } catch(e) {}
     }
 
     async function deleteBooking(charId) {
-      await sbFetch('bookings?character_id=eq.' + encodeURIComponent(charId), {
-        method: 'DELETE'
-      });
+      try {
+        const res = await fetch(BIN_URL + '/latest', {
+          headers: { 'X-Master-Key': BIN_KEY }
+        });
+        const data = await res.json();
+        const list = (data.record?.bookings || []).filter(r => r.character_id !== charId);
+        await fetch(BIN_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': BIN_KEY },
+          body: JSON.stringify({ bookings: list })
+        });
+      } catch(e) {}
     }
 
     // ===== ZIGZAG =====
