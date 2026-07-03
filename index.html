@@ -256,8 +256,7 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://uvkpwxjokgszhrpgbewn.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_jxmLa0R1x9mjnmBZQ0hDRw_xOuRm5SJ';
+   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoV1E2-gYJOVQtdIB7vf8EDh7ZyN_GjCJCc9wM6J52aMlVXtZu6VJlazEC_rdxorLj-Q/exec';
 
     // Descrizioni rivedute per minimizzare spoiler. Nessuna etichetta "buono/cattivo".
     const CHARACTERS = [
@@ -270,7 +269,7 @@
       { id: 'nano',    name: 'Il Nano',        role: 'Uomo della Loggia',    emoji: '🕯️', desc: 'Parla per indovinelli, in un luogo fuori dal tempo.', loggia: true },
       { id: 'gigante', name: 'Il Gigante',     role: 'Essere della Loggia',  emoji: '✨', desc: 'Custode di visioni e avvertimenti.', loggia: true },
       { id: 'gufo',    name: 'Il Gufo',        role: 'Simbolo della Loggia', emoji: '🦉', desc: 'I gufi non sono ciò che sembrano.', loggia: true },
-      { id: 'cavallo',  name: 'Il Cavallo Bianco', role: 'Visione',           emoji: '🐎', desc: 'Appare quando meno te lo aspetti.', loggia: true },
+      { id: 'cavallo', name: 'Il Cavallo Bianco', role: 'Visione',           emoji: '🐎', desc: 'Appare quando meno te lo aspetti.', loggia: true },
       { id: 'leland',  name: 'Leland Palmer',  role: 'Il padre',             emoji: '🎵', desc: 'Un uomo segnato da un dolore profondo.', loggia: false },
       { id: 'maddy',   name: 'Maddy Ferguson', role: 'La cugina',            emoji: '👓', desc: 'Arriva in città e tutto cambia.', loggia: false },
       { id: 'hawk',    name: 'Hawk',           role: 'Vice sceriffo',        emoji: '🦅', desc: 'Segue la sua natura.', loggia: false },
@@ -295,24 +294,9 @@
     let selectedChar = null;
     let lastBookedId = null;
 
-    // ===== SUPABASE API =====
-    async function sbFetch(path, options = {}) {
-      const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
-        ...options,
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal',
-          ...(options.headers || {})
-        }
-      });
-      return res;
-    }
-
     async function loadBookings() {
       try {
-        const res = await sbFetch('bookings?select=character_id,booked_by');
+        const res = await fetch(SCRIPT_URL);
         const data = await res.json();
         bookings = {};
         if (Array.isArray(data)) {
@@ -323,16 +307,21 @@
     }
 
     async function addBooking(charId, name) {
-      await sbFetch('bookings', {
-        method: 'POST',
-        body: JSON.stringify({ character_id: charId, booked_by: name })
-      });
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'add', character_id: charId, booked_by: name })
+        });
+      } catch(e) {}
     }
 
     async function deleteBooking(charId) {
-      await sbFetch('bookings?character_id=eq.' + encodeURIComponent(charId), {
-        method: 'DELETE'
-      });
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'delete', character_id: charId })
+        });
+      } catch(e) {}
     }
 
     // ===== ZIGZAG =====
