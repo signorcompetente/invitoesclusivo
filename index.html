@@ -296,7 +296,7 @@
 
    async function loadBookings() {
       try {
-        const res = await fetch(FB_URL + '/bookings.json');
+        const res = await fetch(FB_URL + '/bookings/' + charId + '.json');
         const data = await res.json();
         bookings = {};
         if (data) {
