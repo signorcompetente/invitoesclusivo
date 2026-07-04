@@ -257,7 +257,6 @@
 
   <script>
     const FB_URL = 'https://twin-peaks-party-default-rtdb.europe-west1.firebasedatabase.app';
-    let firebaseKeys = {};
 
     // Descrizioni rivedute per minimizzare spoiler. Nessuna etichetta "buono/cattivo".
     const CHARACTERS = [
@@ -295,16 +294,14 @@
     let selectedChar = null;
     let lastBookedId = null;
 
-    async function loadBookings() {
+   async function loadBookings() {
       try {
         const res = await fetch(FB_URL + '/bookings.json');
         const data = await res.json();
         bookings = {};
-        firebaseKeys = {};
         if (data) {
-          Object.entries(data).forEach(([key, val]) => {
-            bookings[val.character_id] = val.booked_by;
-            firebaseKeys[val.character_id] = key;
+          Object.entries(data).forEach(([charId, name]) => {
+            if (name) bookings[charId] = name;
           });
         }
       } catch(e) { bookings = {}; }
@@ -313,24 +310,21 @@
 
     async function addBooking(charId, name) {
       try {
-        await fetch(FB_URL + '/bookings.json', {
-          method: 'POST',
+        await fetch(FB_URL + '/bookings/' + charId + '.json', {
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ character_id: charId, booked_by: name })
+          body: JSON.stringify(name)
         });
       } catch(e) {}
     }
 
     async function deleteBooking(charId) {
       try {
-        const key = firebaseKeys[charId];
-        if (key) {
-          await fetch(FB_URL + '/bookings/' + key + '.json', { method: 'DELETE' });
-          delete firebaseKeys[charId];
-        }
+        await fetch(FB_URL + '/bookings/' + charId + '.json', {
+          method: 'DELETE'
+        });
       } catch(e) {}
     }
-
     // ===== ZIGZAG =====
     function drawZigzag() {
       const canvas = document.getElementById('zigzag');
