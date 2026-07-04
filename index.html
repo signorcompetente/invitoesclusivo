@@ -315,6 +315,7 @@
       try {
         await fetch(FB_URL + '/bookings.json', {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ character_id: charId, booked_by: name })
         });
       } catch(e) {}
