@@ -256,8 +256,7 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://uvkpwxjokgszhrpgbewn.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_jxmLa0R1x9mjnmBZQ0hDRw_xOuRm5SJ';
+    const FB_URL = 'https://twin-peaks-party-default-rtdb.europe-west1.firebasedatabase.app';;
 
     // Descrizioni rivedute per minimizzare spoiler. Nessuna etichetta "buono/cattivo".
     const CHARACTERS = [
@@ -295,44 +294,42 @@
     let selectedChar = null;
     let lastBookedId = null;
 
-    // ===== SUPABASE API =====
-    async function sbFetch(path, options = {}) {
-      const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
-        ...options,
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal',
-          ...(options.headers || {})
-        }
-      });
-      return res;
-    }
-
     async function loadBookings() {
       try {
-        const res = await sbFetch('bookings?select=character_id,booked_by');
+        const res = await fetch(FB_URL + '/bookings.json');
         const data = await res.json();
         bookings = {};
-        if (Array.isArray(data)) {
-          data.forEach(row => { bookings[row.character_id] = row.booked_by; });
+        if (data) {
+          Object.entries(data).forEach(([key, val]) => {
+            bookings[val.character_id] = val.booked_by;
+          });
         }
       } catch(e) { bookings = {}; }
       render();
     }
 
     async function addBooking(charId, name) {
-      await sbFetch('bookings', {
-        method: 'POST',
-        body: JSON.stringify({ character_id: charId, booked_by: name })
-      });
+      try {
+        await fetch(FB_URL + '/bookings.json', {
+          method: 'POST',
+          body: JSON.stringify({ character_id: charId, booked_by: name })
+        });
+      } catch(e) {}
     }
 
     async function deleteBooking(charId) {
-      await sbFetch('bookings?character_id=eq.' + encodeURIComponent(charId), {
-        method: 'DELETE'
-      });
+      try {
+        const res = await fetch(FB_URL + '/bookings.json');
+        const data = await res.json();
+        if (data) {
+          for (const [key, val] of Object.entries(data)) {
+            if (val.character_id === charId) {
+              await fetch(FB_URL + '/bookings/' + key + '.json', { method: 'DELETE' });
+              break;
+            }
+          }
+        }
+      } catch(e) {}
     }
 
     // ===== ZIGZAG =====
