@@ -257,6 +257,7 @@
 
   <script>
     const FB_URL = 'https://twin-peaks-party-default-rtdb.europe-west1.firebasedatabase.app';
+    let firebaseKeys = {};
 
     // Descrizioni rivedute per minimizzare spoiler. Nessuna etichetta "buono/cattivo".
     const CHARACTERS = [
@@ -299,9 +300,11 @@
         const res = await fetch(FB_URL + '/bookings.json');
         const data = await res.json();
         bookings = {};
+        firebaseKeys = {};
         if (data) {
           Object.entries(data).forEach(([key, val]) => {
             bookings[val.character_id] = val.booked_by;
+            firebaseKeys[val.character_id] = key;
           });
         }
       } catch(e) { bookings = {}; }
@@ -319,15 +322,10 @@
 
     async function deleteBooking(charId) {
       try {
-        const res = await fetch(FB_URL + '/bookings.json');
-        const data = await res.json();
-        if (data) {
-          for (const [key, val] of Object.entries(data)) {
-            if (val.character_id === charId) {
-              await fetch(FB_URL + '/bookings/' + key + '.json', { method: 'DELETE' });
-              break;
-            }
-          }
+        const key = firebaseKeys[charId];
+        if (key) {
+          await fetch(FB_URL + '/bookings/' + key + '.json', { method: 'DELETE' });
+          delete firebaseKeys[charId];
         }
       } catch(e) {}
     }
