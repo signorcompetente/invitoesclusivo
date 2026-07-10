@@ -309,12 +309,13 @@
     async function confirmBooking() {
       const name = document.getElementById('modal-input').value.trim();
       if (!name || !selectedChar) return;
+      const charId = selectedChar;
       document.getElementById('myname').value = name;
-      bookings[selectedChar] = name;
-      lastBookedId = selectedChar;
+      bookings[charId] = name;
+      lastBookedId = charId;
       render();
       closeModal();
-      await addBooking(selectedChar, name);
+      await addBooking(charId, name);
     }
 
     async function release(charId) {
